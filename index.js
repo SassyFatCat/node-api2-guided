@@ -1,10 +1,20 @@
 const express = require('express');
-
 const Hubs = require('./hubs/hubs-model.js');
 
+// ROUTERS
+const hubsRouter = require('./hubs/hubs-router.js');
+const productsRouter = require('./products/products-router.js');
+
+// SERVER
 const server = express();
 
+// ABLE TO READ JSON
 server.use(express.json());
+
+// CONSUMING ROUTERS BASED ON URL REQUESTS
+server.use('/api/hubs', hubsRouter);//for urls beginning with /api/hubs use the hubsRouter
+server.use('/api/products', productsRouter);
+
 
 server.get('/', (req, res) => {
   res.send(`
@@ -13,88 +23,17 @@ server.get('/', (req, res) => {
   `);
 });
 
-server.get('/api/hubs', (req, res) => {
-  Hubs.find(req.query)
-  .then(hubs => {
-    res.status(200).json(hubs);
-  })
-  .catch(error => {
-    // log error to database
-    console.log(error);
-    res.status(500).json({
-      message: 'Error retrieving the hubs',
-    });
-  });
-});
 
-server.get('/api/hubs/:id', (req, res) => {
-  Hubs.findById(req.params.id)
-  .then(hub => {
-    if (hub) {
-      res.status(200).json(hub);
-    } else {
-      res.status(404).json({ message: 'Hub not found' });
-    }
-  })
-  .catch(error => {
-    // log error to database
-    console.log(error);
-    res.status(500).json({
-      message: 'Error retrieving the hub',
-    });
-  });
-});
 
-server.post('/api/hubs', (req, res) => {
-  Hubs.add(req.body)
-  .then(hub => {
-    res.status(201).json(hub);
-  })
-  .catch(error => {
-    // log error to database
-    console.log(error);
-    res.status(500).json({
-      message: 'Error adding the hub',
-    });
-  });
-});
+// server.get("/clients", handler);
+// server.post("/clients", handler);
+// server.put("/clients/:id", handler);
+// server.delete("/clients/:id", handler);
 
-server.delete('/api/hubs/:id', (req, res) => {
-  Hubs.remove(req.params.id)
-  .then(count => {
-    if (count > 0) {
-      res.status(200).json({ message: 'The hub has been nuked' });
-    } else {
-      res.status(404).json({ message: 'The hub could not be found' });
-    }
-  })
-  .catch(error => {
-    // log error to database
-    console.log(error);
-    res.status(500).json({
-      message: 'Error removing the hub',
-    });
-  });
-});
-
-server.put('/api/hubs/:id', (req, res) => {
-  const changes = req.body;
-  Hubs.update(req.params.id, changes)
-  .then(hub => {
-    if (hub) {
-      res.status(200).json(hub);
-    } else {
-      res.status(404).json({ message: 'The hub could not be found' });
-    }
-  })
-  .catch(error => {
-    // log error to database
-    console.log(error);
-    res.status(500).json({
-      message: 'Error updating the hub',
-    });
-  });
-});
+// server.get("/suppliers", handler);
+// server.post("/suppliers", handler);
+// server.put("/suppliers/:id", handler);
+// server.delete("/suppliers/:id", handler);
 
 // add an endpoint that returns all the messages for a hub
 // add an endpoint for adding new message to a hub
